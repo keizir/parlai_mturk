@@ -1,0 +1,19 @@
+mephisto/tasks/*
+**/.mypy_cache/*
+**/__pycache__/*
+data/*
+mephisto.egg-info/*
+.DS_Store
+tmp/*
+**/node_modules/*
+mephisto/server/**/package-lock.json
+mephisto/server/blueprints/**/build/*
+examples/**/build/*
+**/*.log
+**/build/*
+**/_generated/*
+**/outputs/*
+.coverage
+
+# PyCharm
+.idea

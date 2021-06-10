@@ -1,0 +1,14 @@
+#@package _global_
+mephisto:
+  blueprint:
+    custom_source_bundle: ${task_dir}/webapp/build/bundle.js
+    onboarding_qualification: turn-taking-chat-qualification-${qua_id}
+    num_conversations: 1
+  task:
+    assignment_duration_in_seconds: 1200
+    task_name: turn-taking-chat
+    task_title: "Turn-taking Chat Task"
+    task_description: >
+      This is a turn-taking chat between two people based on the given topic.
+    task_reward: 0.3
+    task_tags: "dynamic,chat,turntaking"
