@@ -19,6 +19,14 @@ from omegaconf import DictConfig
 from dataclasses import dataclass, field
 from typing import List, Any
 
+from mephisto.abstractions.databases.local_database import LocalMephistoDB
+from mephisto.tools.data_browser import DataBrowser as MephistoDataBrowser
+from mephisto.data_model.worker import Worker
+from mephisto.data_model.unit import Unit
+
+db = LocalMephistoDB()
+mephisto_data_browser = MephistoDataBrowser(db=db)
+
 TASK_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 
 defaults = [
@@ -42,6 +50,18 @@ class TestScriptConfig(RunScriptConfig):
     max_turns: int = field(
         default=2,
         metadata={"help": "Number of turns before a conversation is complete"},
+    )
+    manual_validate: bool = field(
+        default=False,
+        metadata={"help": "Validate result from workers manually"}
+    )
+    max_count: int = field(
+        default=1,
+        metadata={"help": "Maximum duplicate words in replies"}
+    )
+    min_length: int = field(
+        default=5,
+        metadata={"help": "Minimum length of each reply"}
     )
     turn_timeout: int = field(
         default=300,
@@ -79,11 +99,47 @@ def main(cfg: DictConfig) -> None:
     #     ],
     #     validate_onboarding=onboarding_always_valid,
     # )
+    shared_state.mturk_specific_qualifications = [
+        {
+            "QualificationTypeId": "00000000000000000040",
+            "Comparator": "LessThanOrEqualTo",#GreaterThanOrEqualTo
+            "IntegerValues": [100],
+            "ActionsGuarded": "PreviewAndAccept",
+        },
+        {
+            "QualificationTypeId": "000000000000000000L0",
+            "Comparator": "GreaterThanOrEqualTo",#GreaterThanOrEqualTo
+            "IntegerValues": [90],
+            "ActionsGuarded": "PreviewAndAccept",
+        }
+    ]
 
     operator = Operator(db)
 
     operator.validate_and_run_config(cfg.mephisto, shared_state)
     operator.wait_for_runs_then_shutdown(skip_input=True, log_rate=30)
+
+    print("....................validating result started.............")
+    if not cfg.manual_validate:
+        units = mephisto_data_browser.get_units_for_task_name("turn-taking-chat")
+        units = [u for u in units if u.get_status() == "completed"]
+
+        for unit in units:
+            data = mephisto_data_browser.get_data_from_unit(unit)
+            org_messages = [message['text'].strip().lower() for message in data['data']['messages'] if message['id'] == data['data']['agent_name']]
+            messages = list(set(org_messages))
+
+            if len(org_messages) - len(messages) >= cfg.max_count:
+                unit.get_assigned_agent().reject_work("There are too many duplicates replies in your conversation.")
+                print("Rejected because of too many duplicates.\n")
+            else:
+                monotonous = len([message for message in messages if len(message) <= cfg.min_length])
+                if monotonous >= cfg.max_count:
+                    unit.get_assigned_agent().reject_work("There are too many monotonous replies in your conversation.")
+                    print("Rejected because of too monotonous replies.\n")
+                else:
+                    unit.get_assigned_agent().approve_work()
+                    print("Approved and paid out.\n")
 
 
 if __name__ == "__main__":
