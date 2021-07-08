@@ -180,8 +180,7 @@ function OnboardingComponent({ onSubmit }) {
   return (
     <div>
       <Directions>
-        Instruction: This is a practice exercise similar to the main task. If you failed to answer, you are not able to move to main task.
-      </Directions>
+        Instruction: This is a practice exercise similar to the main task. If you failed to answer, you are not able to move to main task.      </Directions>
       <div className="container is-fullheight">
         <div className="box">
           { !failed

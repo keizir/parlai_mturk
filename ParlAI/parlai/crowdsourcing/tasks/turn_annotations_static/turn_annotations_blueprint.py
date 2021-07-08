@@ -90,6 +90,12 @@ class TurnAnnotationsStaticBlueprintArgs(StaticReactBlueprintArgs):
             "help": "If we want a freeform textbox input for the crowdworker to respond to the message."
         },
     )
+    database: Optional[bool] = field(
+        default=None,
+        metadata={
+            "help": "Indicator whether conversation data is read from the database."
+        }
+    )
 
 
 @register_mephisto_abstraction()

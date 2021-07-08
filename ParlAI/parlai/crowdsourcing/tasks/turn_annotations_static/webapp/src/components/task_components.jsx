@@ -201,39 +201,39 @@ function SubtaskSubmitButton({ subtaskIndex, numSubtasks, onSubtaskSubmit }) {
 function ChatMessage({ text, agentIdx, annotationQuestion, annotationBuckets, turnIdx, doAnnotateMessage, askReason, responseField, onUserInputUpdate }) {
   var extraElements = '';
   var responseInputElement = '';
-  if (doAnnotateMessage) {
-    if (annotationBuckets !== null) { 
-      extraElements = (<span key={'extra_' + turnIdx}><br /><br />
-        <span style={{ fontStyle: 'italic' }} >
-          <span dangerouslySetInnerHTML={{ __html: annotationQuestion }}></span>
-          <br />
-          <Checkboxes turnIdx={turnIdx} annotationBuckets={annotationBuckets} askReason={askReason} onUserInputUpdate={onUserInputUpdate} />
-        </span>
-      </span>)
-    }
-    if (responseField !== null) {
-      responseInputElement = (
-        <FormControl
-        type="text"
-        name="input_response"
-        id={"input_response_" + turnIdx}
-        style={{
-            fontSize: "14px",
-            resize: "none",
-            marginBottom: "40px"
-        }}
-        onChange={(e) => {onUserInputUpdate();}}
-        placeholder={"Please enter your response here"}
-        onPaste={(e) => {e.preventDefault(); alert("Please do not copy and paste. You must manually respond to each message.")}}
-        autoComplete="off"
-      />
-      )
-    }
+  // if (doAnnotateMessage) {
+  if (annotationBuckets !== null) { 
+    extraElements = (<span key={'extra_' + turnIdx}><br /><br />
+      <span style={{ fontStyle: 'italic' }} >
+        <span dangerouslySetInnerHTML={{ __html: annotationQuestion }}></span>
+        <br />
+        <Checkboxes turnIdx={turnIdx} annotationBuckets={annotationBuckets} askReason={askReason} onUserInputUpdate={onUserInputUpdate} />
+      </span>
+    </span>)
   }
+  if (responseField !== null) {
+    responseInputElement = (
+      <FormControl
+      type="text"
+      name="input_response"
+      id={"input_response_" + turnIdx}
+      style={{
+          fontSize: "14px",
+          resize: "none",
+          marginBottom: "40px"
+      }}
+      onChange={(e) => {onUserInputUpdate();}}
+      placeholder={"Please enter your response here"}
+      onPaste={(e) => {e.preventDefault(); alert("Please do not copy and paste. You must manually respond to each message.")}}
+      autoComplete="off"
+    />
+    )
+  }
+  // }
   return (
     <div>
-      <div className={`alert ${agentIdx == 0 ? "alert-info" : "alert-warning"}`} style={{ float: `${agentIdx == 0 ? "right" : "left"}`, display: 'table', minWidth: `${agentIdx == 0 ? "30%" : "80%"}`, marginTop: "auto" }}>
-        <span><b>{turnIdx % 2 == 0 ? 'YOU' : 'THEM'}:</b> {text}
+      <div className={`alert ${agentIdx == 0 ? "alert-info" : "alert-warning"}`} style={{ float: `${agentIdx == 0 ? "right" : "left"}`, display: 'table', minWidth: `${agentIdx == 0 ? "70%" : "70%"}`, marginTop: "auto" }}>
+        <span><b>{turnIdx % 2 == 0 ? 'Agent 1' : 'Agent 2'}:</b> {text}
           <ErrorBoundary>
             {extraElements}
           </ErrorBoundary>

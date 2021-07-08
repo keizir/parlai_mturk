@@ -36,7 +36,6 @@ else:
 def format_for_printing_data(data):
     # Custom tasks can define methods for how to display their data in a relevant way
     worker_name = Worker(db, data["worker_id"]).worker_name
-    import pdb; pdb.set_trace()
     duration = data["task_end"] - data["task_start"]
     metadata_string = (
         f"Worker: {worker_name}\nUnit: {data['unit_id']}\n"
@@ -58,7 +57,7 @@ def format_for_printing_data(data):
     # return f"-------------------\n{metadata_string}{inputs_string}{output_string}"
     return f"-------------------\n{metadata_string}"
 
-
+import pdb;pdb.set_trace()
 disqualification_name = None
 for unit in units:
     print(format_for_printing_data(mephisto_data_browser.get_data_from_unit(unit)))

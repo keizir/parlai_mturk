@@ -24,8 +24,8 @@ class TurnAnnotationsStaticResultsCompiler(AbstractTurnAnnotationResultsCompiler
     you are asking crowdsource workers to annotate with.
     """
 
-    NUM_SUBTASKS = 7
-    LIVE_ONBOARDING_IS_LAST_SUBTASK = True
+    NUM_SUBTASKS = 1
+    LIVE_ONBOARDING_IS_LAST_SUBTASK = False
     LIVE_ONBOARDING_THRESHOLD = 0.5
     INFLIGHT_ONBOARDING_DATA = None
     NUM_ANNOTATIONS = 5
@@ -283,10 +283,11 @@ class TurnAnnotationsStaticResultsCompiler(AbstractTurnAnnotationResultsCompiler
                     'model_nickname': convo['model_nickname'],
                     'qc_success_pct': convo['qc_success_pct'],
                     'text': utt['text'],
+                    'input_response': utt['input_response']
                 }
                 row = self._add_additional_columns(row=row, utt=utt)
                 for k in self.problem_buckets:
-                    row[k] = utt[k] if utt['agent_idx'] == 1 else ''
+                    row[k] = utt[k] #if utt['agent_idx'] == 1 else ''
                 rows.append(row)
         df = pd.DataFrame(rows)
         print(f'Returning master dataframe with {len(df)} annotations.')

@@ -212,6 +212,7 @@ class Operator:
             # Setup and deploy the server
             built_dir = architect.prepare()
             task_url = architect.deploy()
+            # import pdb; pdb.set_trace()
 
             # TODO(#102) maybe the cleanup (destruction of the server configuration?) should only
             # happen after everything has already been reviewed, this way it's possible to

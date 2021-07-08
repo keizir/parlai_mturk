@@ -199,6 +199,8 @@ class ParlAIChatBlueprint(Blueprint, OnboardingRequired):
             ), f"Target task description path {full_path} doesn't exist"
             with open(full_path, "r") as description_fp:
                 self.full_task_description = description_fp.read()
+        else:
+            self.full_task_description = args.task.task_description
         self.full_preview_description = MISSING_SOMETHING_TEXT
         if args.blueprint.get("preview_source", None) is not None:
             preview_source_file = os.path.expanduser(args.blueprint.preview_source)

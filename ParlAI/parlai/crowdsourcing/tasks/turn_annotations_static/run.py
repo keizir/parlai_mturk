@@ -5,6 +5,7 @@
 # LICENSE file in the root directory of this source tree.
 
 import os
+import time
 from dataclasses import dataclass, field
 from typing import Any, List
 
@@ -24,8 +25,8 @@ TASK_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 
 defaults = [
     {'mephisto/blueprint': STATIC_BLUEPRINT_TYPE},
-    {"mephisto/architect": "local"},
-    {"mephisto/provider": "mock"},
+    {"mephisto/architect": "heroku"},
+    {"mephisto/provider": "mturk_sandbox"},
     {"conf": "example"},
 ]
 
@@ -34,11 +35,16 @@ defaults = [
 class ScriptConfig(MTurkRunScriptConfig):
     defaults: List[Any] = field(default_factory=lambda: defaults)
     task_dir: str = TASK_DIRECTORY
+    qua_id: str = str(time.time())
     monitoring_log_rate: int = field(
         default=30,
         metadata={
             'help': 'Frequency in seconds of logging the monitoring of the crowdsourcing task'
         },
+    )
+    multiple_tasks: bool = field(
+        default=False,
+        metadata={"help": "Read tasks from database and create multiple tasks at once"}
     )
 
 

@@ -136,13 +136,17 @@ class StaticBlueprint(Blueprint, OnboardingRequired):
             for jd in json_data:
                 self._initialization_data_dicts.append(jd)
         elif blue_args.get("data_jsonl", None) is not None:
-            jsonl_file = os.path.expanduser(blue_args.data_jsonl)
-            with open(jsonl_file, "r", encoding="utf-8-sig") as jsonl_fp:
-                line = jsonl_fp.readline()
-                while line:
-                    j = json.loads(line)
-                    self._initialization_data_dicts.append(j)
+            if blue_args.get("database", None) == True:
+                j = json.loads(args.task.chat_data)
+                self._initialization_data_dicts.append(j)
+            else:
+                jsonl_file = os.path.expanduser(blue_args.data_jsonl)
+                with open(jsonl_file, "r", encoding="utf-8-sig") as jsonl_fp:
                     line = jsonl_fp.readline()
+                    while line:
+                        j = json.loads(line)
+                        self._initialization_data_dicts.append(j)
+                        line = jsonl_fp.readline()
         elif shared_state.static_task_data is not None:
             self._initialization_data_dicts = shared_state.static_task_data
         else:

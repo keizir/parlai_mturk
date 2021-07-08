@@ -89,6 +89,12 @@ class TaskConfigArgs:
             )
         },
     )
+    chat_data: str = field(
+        default=MISSING,
+        metadata={
+            "help": "Conversation data should be annotated by worker."
+        }
+    )
 
 
 class TaskConfig:

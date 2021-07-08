@@ -7,6 +7,7 @@
 
 import os
 import time
+import csv
 from mephisto.operations.operator import Operator
 from mephisto.tools.scripts import load_db_and_process_config
 from mephisto.abstractions.blueprints.parlai_chat.parlai_chat_blueprint import (
@@ -31,8 +32,8 @@ TASK_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 
 defaults = [
     {"mephisto/blueprint": BLUEPRINT_TYPE},
-    {"mephisto/architect": "heroku"},
-    {"mephisto/provider": "mturk_sandbox"},
+    {"mephisto/architect": "local"},
+    {"mephisto/provider": "mock"},
     "conf/base",
     {"conf": "custom_prebuilt"},
 ]
@@ -53,7 +54,11 @@ class TestScriptConfig(RunScriptConfig):
     )
     manual_validate: bool = field(
         default=False,
-        metadata={"help": "Validate result from workers manually"}
+        metadata={"help": "Validate result from workers and reward manually"}
+    )
+    multiple_tasks: bool = field(
+        default=False,
+        metadata={"help": "Read tasks from CSV and create multiple tasks at once"}
     )
     max_count: int = field(
         default=1,
@@ -116,8 +121,22 @@ def main(cfg: DictConfig) -> None:
 
     operator = Operator(db)
 
-    operator.validate_and_run_config(cfg.mephisto, shared_state)
-    operator.wait_for_runs_then_shutdown(skip_input=True, log_rate=30)
+    if cfg.multiple_tasks:
+        rows = []
+        with open(TASK_DIRECTORY + "/input.csv", "r") as csvfile:
+            csvreader = csv.reader(csvfile, delimiter=',')
+            for row in csvreader:
+                rows.append(row)
+
+        for row in rows[1:]:
+            cfg.mephisto.task.task_title = row[0]
+            cfg.mephisto.task.task_description = row[1] + "\n\n" + row[2]
+            cfg.mephisto.task.task_reward = float(row[3])
+            operator.validate_and_run_config(cfg.mephisto, shared_state)
+        operator.wait_for_runs_then_shutdown(skip_input=True, log_rate=30)
+    else:
+        operator.validate_and_run_config(cfg.mephisto, shared_state)
+        operator.wait_for_runs_then_shutdown(skip_input=True, log_rate=30)
 
     print("....................validating result started.............")
     if not cfg.manual_validate:
