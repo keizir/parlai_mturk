@@ -53,11 +53,11 @@ class TestScriptConfig(RunScriptConfig):
         metadata={"help": "Number of turns before a conversation is complete"},
     )
     manual_validate: bool = field(
-        default=False,
+        default=True,
         metadata={"help": "Validate result from workers and reward manually"}
     )
     multiple_tasks: bool = field(
-        default=False,
+        default=True,
         metadata={"help": "Read tasks from CSV and create multiple tasks at once"}
     )
     max_count: int = field(
@@ -138,8 +138,8 @@ def main(cfg: DictConfig) -> None:
         operator.validate_and_run_config(cfg.mephisto, shared_state)
         operator.wait_for_runs_then_shutdown(skip_input=True, log_rate=30)
 
-    print("....................validating result started.............")
     if not cfg.manual_validate:
+        print("....................validating result started.............")
         units = mephisto_data_browser.get_units_for_task_name("turn-taking-chat")
         units = [u for u in units if u.get_status() == "completed"]
 

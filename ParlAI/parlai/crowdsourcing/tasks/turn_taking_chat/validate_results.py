@@ -57,7 +57,6 @@ def format_for_printing_data(data):
     # return f"-------------------\n{metadata_string}{inputs_string}{output_string}"
     return f"-------------------\n{metadata_string}"
 
-import pdb;pdb.set_trace()
 disqualification_name = None
 for unit in units:
     print(format_for_printing_data(mephisto_data_browser.get_data_from_unit(unit)))

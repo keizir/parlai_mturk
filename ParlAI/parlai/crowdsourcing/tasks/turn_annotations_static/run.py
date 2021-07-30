@@ -43,7 +43,7 @@ class ScriptConfig(MTurkRunScriptConfig):
         },
     )
     multiple_tasks: bool = field(
-        default=False,
+        default=True,
         metadata={"help": "Read tasks from database and create multiple tasks at once"}
     )
 
